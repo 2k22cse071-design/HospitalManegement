@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin(origins = {"https://hospital-management-one-mauve.vercel.app", "http://localhost:3000"})
 public class AppointmentController {
 
     private final AppointmentService appointmentService;

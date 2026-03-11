@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
-@CrossOrigin("*")
+@CrossOrigin(origins = {"https://hospital-management-one-mauve.vercel.app", "http://localhost:3000"})
 public class UserController {
 
     private final UserService userService;
