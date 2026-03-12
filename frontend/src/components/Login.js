@@ -40,22 +40,44 @@ const Login = () => {
     };
 
     return (
-        <div className="card" style={{ maxWidth: '400px', margin: '100px auto' }}>
-            <h2>Login</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" value={credentials.username} onChange={handleChange} required />
+        <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+            <div className="card" style={{ maxWidth: '450px', width: '100%', textAlign: 'center' }}>
+                <h1 style={{ marginBottom: '0.5rem' }}>Hospitalmanagement</h1>
+                <p style={{ marginBottom: '2rem' }}>Sign in to manage your appointments</p>
+                
+                <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
+                    <div className="form-group">
+                        <label>Username</label>
+                        <input 
+                            type="text" 
+                            name="username" 
+                            placeholder="Enter your username"
+                            value={credentials.username} 
+                            onChange={handleChange} 
+                            required 
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Password</label>
+                        <input 
+                            type="password" 
+                            name="password" 
+                            placeholder="••••••••"
+                            value={credentials.password} 
+                            onChange={handleChange} 
+                            required 
+                        />
+                    </div>
+                    <button type="submit" style={{ marginTop: '1rem' }}>Login</button>
+                </form>
+                
+                <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
+                    <p>Don't have an account?</p>
+                    <button className="secondary" onClick={() => navigate('/signup')} style={{ marginTop: '0.5rem' }}>
+                        Create an Account
+                    </button>
                 </div>
-                <div className="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" value={credentials.password} onChange={handleChange} required />
-                </div>
-                <button type="submit">Login</button>
-            </form>
-            <p style={{ textAlign: 'center', marginTop: '15px' }}>
-                Don't have an account? <a href="/signup">Sign Up</a>
-            </p>
+            </div>
         </div>
     );
 };

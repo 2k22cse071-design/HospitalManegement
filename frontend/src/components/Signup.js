@@ -40,26 +40,55 @@ const Signup = () => {
     };
 
     return (
-        <div className="card" style={{ maxWidth: '400px', margin: '100px auto' }}>
-            <h2>Create Patient Account</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Full Name</label>
-                    <input type="text" name="name" value={user.name} onChange={handleChange} required />
+        <div className="container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+            <div className="card" style={{ maxWidth: '450px', width: '100%', textAlign: 'center' }}>
+                <h1 style={{ marginBottom: '0.5rem' }}>Hospitalmanagement</h1>
+                <p style={{ marginBottom: '2rem' }}>Join our community for better healthcare</p>
+                
+                <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
+                    <div className="form-group">
+                        <label>Full Name</label>
+                        <input 
+                            type="text" 
+                            name="name" 
+                            placeholder="John Doe"
+                            value={user.name} 
+                            onChange={handleChange} 
+                            required 
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Username</label>
+                        <input 
+                            type="text" 
+                            name="username" 
+                            placeholder="johndoe123"
+                            value={user.username} 
+                            onChange={handleChange} 
+                            required 
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Password</label>
+                        <input 
+                            type="password" 
+                            name="password" 
+                            placeholder="••••••••"
+                            value={user.password} 
+                            onChange={handleChange} 
+                            required 
+                        />
+                    </div>
+                    <button type="submit" style={{ marginTop: '1rem' }}>Sign Up</button>
+                </form>
+                
+                <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
+                    <p>Already have an account?</p>
+                    <button className="secondary" onClick={() => navigate('/login')} style={{ marginTop: '0.5rem' }}>
+                        Go to Login
+                    </button>
                 </div>
-                <div className="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" value={user.username} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" value={user.password} onChange={handleChange} required />
-                </div>
-                <button type="submit">Sign Up</button>
-            </form>
-            <p style={{ textAlign: 'center', marginTop: '15px' }}>
-                Already have an account? <a href="/login">Login</a>
-            </p>
+            </div>
         </div>
     );
 };

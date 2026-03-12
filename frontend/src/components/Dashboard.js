@@ -110,13 +110,13 @@ const Dashboard = () => {
 
     return (
         <ProtectedRoute>
-            <div className="container" style={{ maxWidth: '1000px' }}>
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '1px solid #eee', paddingBottom: '20px' }}>
-                    <div>
-                        <h1>Hospital Dashboard</h1>
-                        <p>Welcome, <strong>{user.name}</strong> <span className={`badge ${user.role.toLowerCase()}`}>{user.role}</span></p>
+            <div className="container">
+                <header className="top-bar">
+                    <div className="welcome-section">
+                        <h1>Hospitalmanagement</h1>
+                        <p>Hello, <strong>{user.name}</strong> <span className={`badge ${user.role.toLowerCase()}`}>{user.role}</span></p>
                     </div>
-                    <button onClick={handleLogout} style={{ width: 'auto', padding: '10px 20px', backgroundColor: '#ef4444' }}>
+                    <button onClick={handleLogout} className="danger">
                         Logout
                     </button>
                 </header>
@@ -128,18 +128,19 @@ const Dashboard = () => {
                             <CreateUser />
                             <div className="card">
                                 <h2>System Appointments (Admin)</h2>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Patient</th>
-                                            <th>Doctor</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
+                                <div className="table-wrapper">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Patient</th>
+                                                <th>Doctor</th>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                         {appointments.map(app => (
                                             <tr key={app.id}>
                                                 <td>{app.patient.name}</td>
@@ -157,9 +158,10 @@ const Dashboard = () => {
                                                 </td>
                                             </tr>
                                         ))}
-                                        {appointments.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No appointments found.</td></tr>}
-                                    </tbody>
-                                </table>
+                                    {appointments.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No appointments found.</td></tr>}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -169,36 +171,38 @@ const Dashboard = () => {
                         <div id="doctor-section">
                             <div className="card">
                                 <h2>My Appointments</h2>
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>Patient</th>
-                                            <th>Date</th>
-                                            <th>Time</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {appointments.map(app => (
-                                            <tr key={app.id}>
-                                                <td>{app.patient.name}</td>
-                                                <td>{app.appointmentDate}</td>
-                                                <td>{app.startTime} - {app.endTime}</td>
-                                                <td><span className={`status-${app.status.toLowerCase()}`}>{app.status === 'BOOKED' ? 'PENDING' : app.status}</span></td>
-                                                <td>
-                                                    {app.status === 'BOOKED' && (
-                                                        <div style={{ display: 'flex', gap: '5px' }}>
-                                                            <button onClick={() => handleStatusChange(app.id, 'CONFIRMED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#22c55e' }}>Confirm</button>
-                                                            <button onClick={() => handleStatusChange(app.id, 'CANCELLED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#ef4444' }}>Reject</button>
-                                                        </div>
-                                                    )}
-                                                </td>
+                                <div className="table-wrapper">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Patient</th>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
                                             </tr>
-                                        ))}
-                                        {appointments.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center' }}>No appointments scheduled.</td></tr>}
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            {appointments.map(app => (
+                                                <tr key={app.id}>
+                                                    <td>{app.patient.name}</td>
+                                                    <td>{app.appointmentDate}</td>
+                                                    <td>{app.startTime} - {app.endTime}</td>
+                                                    <td><span className={`status-${app.status.toLowerCase()}`}>{app.status === 'BOOKED' ? 'PENDING' : app.status}</span></td>
+                                                    <td>
+                                                        {app.status === 'BOOKED' && (
+                                                            <div style={{ display: 'flex', gap: '5px' }}>
+                                                                <button onClick={() => handleStatusChange(app.id, 'CONFIRMED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#22c55e' }}>Confirm</button>
+                                                                <button onClick={() => handleStatusChange(app.id, 'CANCELLED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#ef4444' }}>Reject</button>
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {appointments.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center' }}>No appointments scheduled.</td></tr>}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <DoctorSlot user={user} onSlotAdded={() => fetchData(user)} />
                             <div className="card">
