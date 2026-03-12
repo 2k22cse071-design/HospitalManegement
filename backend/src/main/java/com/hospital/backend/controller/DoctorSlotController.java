@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/slots")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"https://hospital-management-one-mauve.vercel.app", "http://localhost:3000"})
+@CrossOrigin(originPatterns = {"https://hospital-management-*.vercel.app", "http://localhost:3000"})
 public class DoctorSlotController {
 
     private final DoctorSlotService doctorSlotService;

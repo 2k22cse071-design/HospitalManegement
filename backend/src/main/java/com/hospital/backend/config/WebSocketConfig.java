@@ -18,6 +18,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws-hospital").setAllowedOriginPatterns("https://hospital-management-one-mauve.vercel.app", "http://localhost:3000").withSockJS();
+        registry.addEndpoint("/ws-hospital").setAllowedOriginPatterns("https://hospital-management-*.vercel.app", "http://localhost:3000").withSockJS();
     }
 }
