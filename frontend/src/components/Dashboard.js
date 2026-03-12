@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import API_BASE_URL from '../config';
+import ProtectedRoute from './ProtectedRoute';
 import CreateUser from './CreateUser';
 import DoctorSlot from './DoctorSlot';
 import Appointment from './Appointment';
@@ -21,10 +22,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         const storedUser = JSON.parse(localStorage.getItem('user'));
-        if (!storedUser) {
-            navigate('/login');
-            return;
-        } else {
+        if (storedUser) {
             setUser(storedUser);
             fetchData(storedUser);
         }
@@ -111,131 +109,133 @@ const Dashboard = () => {
     if (!user) return <div className="container">Loading...</div>;
 
     return (
-        <div className="container" style={{ maxWidth: '1000px' }}>
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '1px solid #eee', paddingBottom: '20px' }}>
-                <div>
-                    <h1>Hospital Dashboard</h1>
-                    <p>Welcome, <strong>{user.name}</strong> <span className={`badge ${user.role.toLowerCase()}`}>{user.role}</span></p>
-                </div>
-                <button onClick={handleLogout} style={{ width: 'auto', padding: '10px 20px', backgroundColor: '#ef4444' }}>
-                    Logout
-                </button>
-            </header>
+        <ProtectedRoute>
+            <div className="container" style={{ maxWidth: '1000px' }}>
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', borderBottom: '1px solid #eee', paddingBottom: '20px' }}>
+                    <div>
+                        <h1>Hospital Dashboard</h1>
+                        <p>Welcome, <strong>{user.name}</strong> <span className={`badge ${user.role.toLowerCase()}`}>{user.role}</span></p>
+                    </div>
+                    <button onClick={handleLogout} style={{ width: 'auto', padding: '10px 20px', backgroundColor: '#ef4444' }}>
+                        Logout
+                    </button>
+                </header>
 
-            <main>
-                {/* ADMIN VIEW: ONLY create users and see appointments */}
-                {user.role === 'ADMIN' && (
-                    <div id="admin-section">
-                        <CreateUser />
-                        <div className="card">
-                            <h2>System Appointments (Admin)</h2>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Patient</th>
-                                        <th>Doctor</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {appointments.map(app => (
-                                        <tr key={app.id}>
-                                            <td>{app.patient.name}</td>
-                                            <td>{app.doctor.name}</td>
-                                            <td>{app.appointmentDate}</td>
-                                            <td>{app.startTime} - {app.endTime}</td>
-                                            <td><span className={`status-${app.status.toLowerCase()}`}>{app.status === 'BOOKED' ? 'PENDING' : app.status}</span></td>
-                                            <td>
-                                                {app.status === 'BOOKED' && (
-                                                    <div style={{ display: 'flex', gap: '5px' }}>
-                                                        <button onClick={() => handleStatusChange(app.id, 'CONFIRMED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#22c55e' }}>Confirm</button>
-                                                        <button onClick={() => handleStatusChange(app.id, 'CANCELLED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#ef4444' }}>Cancel</button>
-                                                    </div>
-                                                )}
-                                            </td>
+                <main>
+                    {/* ADMIN VIEW: ONLY create users and see appointments */}
+                    {user.role === 'ADMIN' && (
+                        <div id="admin-section">
+                            <CreateUser />
+                            <div className="card">
+                                <h2>System Appointments (Admin)</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Patient</th>
+                                            <th>Doctor</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
                                         </tr>
-                                    ))}
-                                    {appointments.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No appointments found.</td></tr>}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {appointments.map(app => (
+                                            <tr key={app.id}>
+                                                <td>{app.patient.name}</td>
+                                                <td>{app.doctor.name}</td>
+                                                <td>{app.appointmentDate}</td>
+                                                <td>{app.startTime} - {app.endTime}</td>
+                                                <td><span className={`status-${app.status.toLowerCase()}`}>{app.status === 'BOOKED' ? 'PENDING' : app.status}</span></td>
+                                                <td>
+                                                    {app.status === 'BOOKED' && (
+                                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                                            <button onClick={() => handleStatusChange(app.id, 'CONFIRMED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#22c55e' }}>Confirm</button>
+                                                            <button onClick={() => handleStatusChange(app.id, 'CANCELLED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#ef4444' }}>Cancel</button>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {appointments.length === 0 && <tr><td colSpan="6" style={{ textAlign: 'center' }}>No appointments found.</td></tr>}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                {/* DOCTOR VIEW: ONLY manage slots and see their appointments */}
-                {user.role === 'DOCTOR' && (
-                    <div id="doctor-section">
-                        <div className="card">
-                            <h2>My Appointments</h2>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Patient</th>
-                                        <th>Date</th>
-                                        <th>Time</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {appointments.map(app => (
-                                        <tr key={app.id}>
-                                            <td>{app.patient.name}</td>
-                                            <td>{app.appointmentDate}</td>
-                                            <td>{app.startTime} - {app.endTime}</td>
-                                            <td><span className={`status-${app.status.toLowerCase()}`}>{app.status === 'BOOKED' ? 'PENDING' : app.status}</span></td>
-                                            <td>
-                                                {app.status === 'BOOKED' && (
-                                                    <div style={{ display: 'flex', gap: '5px' }}>
-                                                        <button onClick={() => handleStatusChange(app.id, 'CONFIRMED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#22c55e' }}>Confirm</button>
-                                                        <button onClick={() => handleStatusChange(app.id, 'CANCELLED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#ef4444' }}>Reject</button>
-                                                    </div>
-                                                )}
-                                            </td>
+                    {/* DOCTOR VIEW: ONLY manage slots and see their appointments */}
+                    {user.role === 'DOCTOR' && (
+                        <div id="doctor-section">
+                            <div className="card">
+                                <h2>My Appointments</h2>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Patient</th>
+                                            <th>Date</th>
+                                            <th>Time</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                        {appointments.map(app => (
+                                            <tr key={app.id}>
+                                                <td>{app.patient.name}</td>
+                                                <td>{app.appointmentDate}</td>
+                                                <td>{app.startTime} - {app.endTime}</td>
+                                                <td><span className={`status-${app.status.toLowerCase()}`}>{app.status === 'BOOKED' ? 'PENDING' : app.status}</span></td>
+                                                <td>
+                                                    {app.status === 'BOOKED' && (
+                                                        <div style={{ display: 'flex', gap: '5px' }}>
+                                                            <button onClick={() => handleStatusChange(app.id, 'CONFIRMED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#22c55e' }}>Confirm</button>
+                                                            <button onClick={() => handleStatusChange(app.id, 'CANCELLED')} style={{ padding: '5px 10px', fontSize: '10px', backgroundColor: '#ef4444' }}>Reject</button>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {appointments.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center' }}>No appointments scheduled.</td></tr>}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <DoctorSlot user={user} onSlotAdded={() => fetchData(user)} />
+                            <div className="card">
+                                <h2>My Availability Slots</h2>
+                                <ul>
+                                    {slots.map(slot => (
+                                        <li key={slot.id}>{slot.date}: {slot.startTime} - {slot.endTime}</li>
                                     ))}
-                                    {appointments.length === 0 && <tr><td colSpan="5" style={{ textAlign: 'center' }}>No appointments scheduled.</td></tr>}
-                                </tbody>
-                            </table>
+                                    {slots.length === 0 && <li>No slots added yet.</li>}
+                                </ul>
+                            </div>
                         </div>
-                        <DoctorSlot user={user} onSlotAdded={() => fetchData(user)} />
-                        <div className="card">
-                            <h2>My Availability Slots</h2>
-                            <ul>
-                                {slots.map(slot => (
-                                    <li key={slot.id}>{slot.date}: {slot.startTime} - {slot.endTime}</li>
-                                ))}
-                                {slots.length === 0 && <li>No slots added yet.</li>}
-                            </ul>
-                        </div>
-                    </div>
-                )}
+                    )}
 
-                {/* PATIENT VIEW: ONLY book appointments and see status */}
-                {user.role === 'PATIENT' && (
-                    <div id="patient-section">
-                        <Appointment onAppointmentBooked={() => fetchData(user)} />
-                        <div className="card">
-                            <h2>My Bookings</h2>
-                            <ul>
-                                {appointments.map(app => (
-                                    <li key={app.id} style={{ marginBottom: '10px' }}>
-                                        <strong>{app.appointmentDate}</strong> with Dr. {app.doctor.name}
-                                        <br />
-                                        <small>{app.startTime} - {app.endTime}</small>
-                                        <span className={`badge status-${app.status.toLowerCase()}`} style={{ marginLeft: '10px' }}>{app.status === 'BOOKED' ? 'PENDING' : app.status}</span>
-                                    </li>
-                                ))}
-                                {appointments.length === 0 && <li>No appointments booked.</li>}
-                            </ul>
+                    {/* PATIENT VIEW: ONLY book appointments and see status */}
+                    {user.role === 'PATIENT' && (
+                        <div id="patient-section">
+                            <Appointment onAppointmentBooked={() => fetchData(user)} />
+                            <div className="card">
+                                <h2>My Bookings</h2>
+                                <ul>
+                                    {appointments.map(app => (
+                                        <li key={app.id} style={{ marginBottom: '10px' }}>
+                                            <strong>{app.appointmentDate}</strong> with Dr. {app.doctor.name}
+                                            <br />
+                                            <small>{app.startTime} - {app.endTime}</small>
+                                            <span className={`badge status-${app.status.toLowerCase()}`} style={{ marginLeft: '10px' }}>{app.status === 'BOOKED' ? 'PENDING' : app.status}</span>
+                                        </li>
+                                    ))}
+                                    {appointments.length === 0 && <li>No appointments booked.</li>}
+                                </ul>
+                            </div>
                         </div>
-                    </div>
-                )}
-            </main>
-        </div>
+                    )}
+                </main>
+            </div>
+        </ProtectedRoute>
     );
 };
 

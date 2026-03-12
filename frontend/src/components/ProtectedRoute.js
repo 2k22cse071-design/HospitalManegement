@@ -2,7 +2,6 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
-    // Check if user exists in localStorage
     const user = JSON.parse(localStorage.getItem('user'));
 
     if (!user) {
@@ -10,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/login" replace />;
     }
 
-    // If logged in, render the component (children)
+    // If logged in, render the children
     return children;
 };
 

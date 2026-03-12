@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import API_BASE_URL from '../config';
+import ProtectedRoute from './ProtectedRoute';
 
 const CreateUser = () => {
     const [user, setUser] = useState({
@@ -38,38 +39,40 @@ const CreateUser = () => {
     };
 
     return (
-        <div className="card">
-            <h2>Create New User</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Name</label>
-                    <input type="text" name="name" value={user.name} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" value={user.username} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" value={user.password} onChange={handleChange} required />
-                </div>
-                <div className="form-group">
-                    <label>Role</label>
-                    <select name="role" value={user.role} onChange={handleChange}>
-                        <option value="ADMIN">ADMIN</option>
-                        <option value="DOCTOR">DOCTOR</option>
-                        <option value="PATIENT">PATIENT</option>
-                    </select>
-                </div>
-                {user.role === 'DOCTOR' && (
+        <ProtectedRoute>
+            <div className="card">
+                <h2>Create New User</h2>
+                <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Specialization</label>
-                        <input type="text" name="specialization" value={user.specialization} onChange={handleChange} required />
+                        <label>Name</label>
+                        <input type="text" name="name" value={user.name} onChange={handleChange} required />
                     </div>
-                )}
-                <button type="submit">Create User</button>
-            </form>
-        </div>
+                    <div className="form-group">
+                        <label>Username</label>
+                        <input type="text" name="username" value={user.username} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" value={user.password} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Role</label>
+                        <select name="role" value={user.role} onChange={handleChange}>
+                            <option value="ADMIN">ADMIN</option>
+                            <option value="DOCTOR">DOCTOR</option>
+                            <option value="PATIENT">PATIENT</option>
+                        </select>
+                    </div>
+                    {user.role === 'DOCTOR' && (
+                        <div className="form-group">
+                            <label>Specialization</label>
+                            <input type="text" name="specialization" value={user.specialization} onChange={handleChange} required />
+                        </div>
+                    )}
+                    <button type="submit">Create User</button>
+                </form>
+            </div>
+        </ProtectedRoute>
     );
 };
 

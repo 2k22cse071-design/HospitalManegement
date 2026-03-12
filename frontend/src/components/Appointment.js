@@ -3,6 +3,8 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import API_BASE_URL from '../config';
 
+import ProtectedRoute from './ProtectedRoute';
+
 const Appointment = ({ onAppointmentBooked }) => {
     const user = JSON.parse(localStorage.getItem('user'));
     const [doctors, setDoctors] = useState([]);
@@ -138,51 +140,53 @@ const Appointment = ({ onAppointmentBooked }) => {
     };
 
     return (
-        <div className="card">
-            <h2>Book Appointment</h2>
-            <form onSubmit={handleSubmit}>
-                {user?.role !== 'PATIENT' && (
-                    <div className="form-group">
-                        <label>Patient ID</label>
-                        <input type="number" name="patientId" value={appointment.patientId} readOnly required />
-                    </div>
-                )}
+        <ProtectedRoute>
+            <div className="card">
+                <h2>Book Appointment</h2>
+                <form onSubmit={handleSubmit}>
+                    {user?.role !== 'PATIENT' && (
+                        <div className="form-group">
+                            <label>Patient ID</label>
+                            <input type="number" name="patientId" value={appointment.patientId} readOnly required />
+                        </div>
+                    )}
 
-                <div className="form-group">
-                    <label>Select Doctor</label>
-                    <select value={selectedDoctorId} onChange={handleDoctorChange} required>
-                        <option value="">-- Choose a Doctor --</option>
-                        {doctors.map(doc => (
-                            <option key={doc.id} value={doc.id}>
-                                {doc.name} ({doc.specialization})
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                {selectedDoctorId && (
                     <div className="form-group">
-                        <label>Available Slots</label>
-                        <select onChange={handleSlotChange} required>
-                            <option value="">-- Choose a Timing --</option>
-                            {availableSlots.length > 0 ? (
-                                availableSlots.map(slot => (
-                                    <option key={slot.id} value={slot.id}>
-                                        {slot.date} | {slot.startTime} - {slot.endTime}
-                                    </option>
-                                ))
-                            ) : (
-                                <option disabled>No slots available</option>
-                            )}
+                        <label>Select Doctor</label>
+                        <select value={selectedDoctorId} onChange={handleDoctorChange} required>
+                            <option value="">-- Choose a Doctor --</option>
+                            {doctors.map(doc => (
+                                <option key={doc.id} value={doc.id}>
+                                    {doc.name} ({doc.specialization})
+                                </option>
+                            ))}
                         </select>
                     </div>
-                )}
 
-                <button type="submit" disabled={!appointment.startTime}>
-                    Confirm Booking
-                </button>
-            </form>
-        </div>
+                    {selectedDoctorId && (
+                        <div className="form-group">
+                            <label>Available Slots</label>
+                            <select onChange={handleSlotChange} required>
+                                <option value="">-- Choose a Timing --</option>
+                                {availableSlots.length > 0 ? (
+                                    availableSlots.map(slot => (
+                                        <option key={slot.id} value={slot.id}>
+                                            {slot.date} | {slot.startTime} - {slot.endTime}
+                                        </option>
+                                    ))
+                                ) : (
+                                    <option disabled>No slots available</option>
+                                )}
+                            </select>
+                        </div>
+                    )}
+
+                    <button type="submit" disabled={!appointment.startTime}>
+                        Confirm Booking
+                    </button>
+                </form>
+            </div>
+        </ProtectedRoute>
     );
 };
 
