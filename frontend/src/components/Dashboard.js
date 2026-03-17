@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import API_BASE_URL from '../config';
+import api from '../api';
 import ProtectedRoute from './ProtectedRoute';
 import CreateUser from './CreateUser';
 import DoctorSlot from './DoctorSlot';
@@ -69,16 +70,16 @@ const Dashboard = () => {
     const fetchData = async (currentUser) => {
         try {
             if (currentUser.role === 'ADMIN') {
-                const res = await fetch(`${API_BASE_URL}/appointments`);
+                const res = await api.get(`/appointments`);
                 if (res.ok) setAppointments(await res.json());
             } else if (currentUser.role === 'DOCTOR') {
-                const appRes = await fetch(`${API_BASE_URL}/appointments/doctor/${currentUser.id}`);
+                const appRes = await api.get(`/appointments/doctor/${currentUser.id}`);
                 if (appRes.ok) setAppointments(await appRes.json());
 
-                const slotRes = await fetch(`${API_BASE_URL}/slots/doctor/${currentUser.id}`);
+                const slotRes = await api.get(`/slots/doctor/${currentUser.id}`);
                 if (slotRes.ok) setSlots(await slotRes.json());
             } else if (currentUser.role === 'PATIENT') {
-                const res = await fetch(`${API_BASE_URL}/appointments/patient/${currentUser.id}`);
+                const res = await api.get(`/appointments/patient/${currentUser.id}`);
                 if (res.ok) setAppointments(await res.json());
             }
         } catch (error) {
@@ -89,9 +90,7 @@ const Dashboard = () => {
     const handleStatusChange = async (id, status) => {
         const endpoint = status === 'CONFIRMED' ? 'confirm' : 'cancel';
         try {
-            const res = await fetch(`${API_BASE_URL}/appointments/${id}/${endpoint}`, {
-                method: 'PUT'
-            });
+            const res = await api.put(`/appointments/${id}/${endpoint}`);
             if (res.ok) {
                 alert(`Appointment ${status.toLowerCase()}ed successfully`);
                 fetchData(user);
@@ -103,6 +102,7 @@ const Dashboard = () => {
 
     const handleLogout = () => {
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
         navigate('/login');
     };
 

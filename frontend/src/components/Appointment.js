@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import API_BASE_URL from '../config';
+import api from '../api';
 
 import ProtectedRoute from './ProtectedRoute';
 
@@ -59,7 +60,7 @@ const Appointment = ({ onAppointmentBooked }) => {
 
     const fetchDoctors = async () => {
         try {
-            const res = await fetch(`${API_BASE_URL}/users/doctors`);
+            const res = await api.get(`/users/doctors`);
             if (res.ok) setDoctors(await res.json());
         } catch (error) {
             console.error('Error fetching doctors:', error);
@@ -68,7 +69,7 @@ const Appointment = ({ onAppointmentBooked }) => {
 
     const fetchSlots = async (doctorId) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/slots/doctor/${doctorId}`);
+            const res = await api.get(`/slots/doctor/${doctorId}`);
             if (res.ok) setAvailableSlots(await res.json());
         } catch (error) {
             console.error('Error fetching slots:', error);
@@ -106,13 +107,7 @@ const Appointment = ({ onAppointmentBooked }) => {
             return;
         }
         try {
-            const response = await fetch(`${API_BASE_URL}/appointments`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(appointment),
-            });
+            const response = await api.post(`/appointments`, appointment);
             if (response.ok) {
                 alert('Appointment booked successfully!');
                 setAppointment({

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import API_BASE_URL from '../config';
+import api from '../api';
 import ProtectedRoute from './ProtectedRoute';
 
 const CreateUser = () => {
@@ -20,13 +21,7 @@ const CreateUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${API_BASE_URL}/users`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(user),
-            });
+            const response = await api.post(`/users`, user);
             if (response.ok) {
                 alert('User created successfully!');
                 setUser({ name: '', email: '', username: '', password: '', role: 'PATIENT', specialization: '' });

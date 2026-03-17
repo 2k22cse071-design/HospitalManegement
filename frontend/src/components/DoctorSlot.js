@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import API_BASE_URL from '../config';
+import api from '../api';
 
 import ProtectedRoute from './ProtectedRoute';
 
@@ -26,13 +27,7 @@ const DoctorSlot = ({ user, onSlotAdded }) => {
                 doctorId: isDoctor ? user.id : slot.doctorId
             };
 
-            const response = await fetch(`${API_BASE_URL}/slots`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(slotData),
-            });
+            const response = await api.post(`/slots`, slotData);
             if (response.ok) {
                 alert('Slot added successfully!');
                 setSlot({

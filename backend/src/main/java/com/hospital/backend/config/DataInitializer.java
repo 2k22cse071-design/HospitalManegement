@@ -7,22 +7,35 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Configuration
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
-        System.out.println(">>> DataInitializer: Updating database with doctor credentials...");
+        System.out.println(">>> DataInitializer: Updating database credentials...");
+
+        // Migrate existing users to have hashed passwords if they don't already
+        userRepository.findAll().forEach(user -> {
+            if (!user.getPassword().startsWith("$2a$")) {
+                System.out.println(">>> Bootstrap: Hashing password for user: " + user.getUsername());
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
+                userRepository.save(user);
+            }
+        });
 
         // Ensure Admin exists
         if (userRepository.findByUsername("admin").isEmpty()) {
             userRepository.save(User.builder()
                     .name("System Admin")
                     .username("admin")
-                    .password("admin123")
+                    .password(passwordEncoder.encode("admin123"))
+                    .email("admin@hospital.com")
                     .role(Role.ADMIN)
                     .build());
             System.out.println(">>> Bootstrap: Admin created");
@@ -41,7 +54,8 @@ public class DataInitializer implements CommandLineRunner {
             userRepository.save(User.builder()
                     .name(name)
                     .username(username)
-                    .password(password)
+                    .password(passwordEncoder.encode(password))
+                    .email(username + "@hospital.com")
                     .role(Role.DOCTOR)
                     .specialization(specialization)
                     .build());

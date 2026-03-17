@@ -1,9 +1,14 @@
 package com.hospital.backend.service;
 
+import com.hospital.backend.dto.AuthResponse;
 import com.hospital.backend.entity.Role;
 import com.hospital.backend.entity.User;
 import com.hospital.backend.repository.UserRepository;
+import com.hospital.backend.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +18,9 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     public User createUser(User user) {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
@@ -21,6 +29,7 @@ public class UserService {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists: " + user.getEmail());
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -37,17 +46,17 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
     }
 
-    public User login(String username, String password) {
-        System.out.println("LOGIN ATTEMPT: username=" + username + " password=" + password);
+    public AuthResponse login(String username, String password) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(username, password)
+        );
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> {
-                    System.out.println("LOGIN FAILED: User not found -> " + username);
-                    return new RuntimeException("Invalid username or password");
-                });
-
-        if (!user.getPassword().equals(password)) {
-            throw new RuntimeException("Invalid username or password");
-        }
-        return user;
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        String jwtToken = jwtService.generateToken(user);
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .user(user)
+                .build();
     }
 }

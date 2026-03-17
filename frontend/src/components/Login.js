@@ -25,9 +25,10 @@ const Login = () => {
                 body: JSON.stringify(credentials),
             });
             if (response.ok) {
-                const user = await response.json();
-                localStorage.setItem('user', JSON.stringify(user));
-                alert(`Login successful! Welcome ${user.name}`);
+                const data = await response.json();
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                alert(`Login successful! Welcome ${data.user.name}`);
                 navigate('/dashboard');
             } else {
                 const errorData = await response.json();

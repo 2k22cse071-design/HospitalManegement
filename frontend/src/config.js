@@ -1,3 +1,5 @@
-const API_BASE_URL = 'https://hospitalmanegement-backend.onrender.com';
+const API_BASE_URL = window.location.hostname === 'localhost' 
+    ? 'http://localhost:8080' 
+    : 'https://hospitalmanegement-backend.onrender.com';
 
 export default API_BASE_URL;
