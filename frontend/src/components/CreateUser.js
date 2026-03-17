@@ -5,6 +5,7 @@ import ProtectedRoute from './ProtectedRoute';
 const CreateUser = () => {
     const [user, setUser] = useState({
         name: '',
+        email: '',
         username: '',
         password: '',
         role: 'PATIENT',
@@ -28,7 +29,7 @@ const CreateUser = () => {
             });
             if (response.ok) {
                 alert('User created successfully!');
-                setUser({ name: '', username: '', password: '', role: 'PATIENT', specialization: '' });
+                setUser({ name: '', email: '', username: '', password: '', role: 'PATIENT', specialization: '' });
             } else {
                 alert('Error creating user');
             }
@@ -46,6 +47,10 @@ const CreateUser = () => {
                     <div className="form-group">
                         <label>Name</label>
                         <input type="text" name="name" value={user.name} onChange={handleChange} required />
+                    </div>
+                    <div className="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" value={user.email} onChange={handleChange} required />
                     </div>
                     <div className="form-group">
                         <label>Username</label>

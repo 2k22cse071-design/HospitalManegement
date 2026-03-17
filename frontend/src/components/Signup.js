@@ -5,6 +5,7 @@ import API_BASE_URL from '../config';
 const Signup = () => {
     const [user, setUser] = useState({
         name: '',
+        email: '',
         username: '',
         password: '',
         role: 'PATIENT' // Default role for public signups
@@ -53,6 +54,17 @@ const Signup = () => {
                             name="name" 
                             placeholder="John Doe"
                             value={user.name} 
+                            onChange={handleChange} 
+                            required 
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Email Address</label>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            placeholder="john@example.com"
+                            value={user.email} 
                             onChange={handleChange} 
                             required 
                         />
